@@ -1,0 +1,60 @@
+
+name: Dispatch Tests
+
+on:
+  workflow_call:
+    inputs:
+      env:
+        description: Envrionment to release
+        type: string
+        required: true
+      ticket:
+        description: 'Ticket number for the release e.g. AURORA-000'
+        type: string
+        required: true
+      releaseYearMonth:
+        description: 'Release year and month e.g. 2024-09'
+        type: string
+        required: true
+      esIndex:
+        description: 'The name of the Elasticsearch index for the release'
+        type: string
+        required: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  read-latest-tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get tag using action
+        id: get-tag-repo-a
+        uses: ./.github/actions/get_latest_tag
+        with:
+          url: 'heons/test-semantic-version-up-file'
+          token: ${{ secrets.CICD_TOKEN }}
+
+      - name: print-tag
+        id: print-tag
+        run: echo ${{ steps.get-tag-repo-a.outputs.tag }}
+
+      - name: Replace text
+        run: |
+          sed -i "s/\"a-api\"\s*=\s*\"[0-9.]*\"/\"a-api\"           = \"${{ steps.get-tag-repo-a.outputs.tag }}\"/" index.txt
+          sed -i "s/\"a-interpolation\"\s*=\s*\"[0-9.]*\"/\"a-interpolation\" = \"${{ steps.get-tag-repo-a.outputs.tag }}\"/" index.txt
+          sed -i "s/elasticsearch_index_name\s*=\s*\"aurora[^\n]*\"/elasticsearch_index_name = \"${{ github.event.inputs.esIndex }}\"/" index.txt
+          echo $(cat index.txt)
+      
+      - name: Create pull request
+        id: create_pr
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.CICD_TOKEN }}
+          title: "[Automated] chore/${{ github.event.inputs.ticket }} aurora release ${{ github.event.inputs.env }} ${{ github.event.inputs.releaseYearMonth }}"
+          body: 'This PR was automatically created by GitHub Actions.'
+          branch: chore/${{ github.event.inputs.ticket }}_auora_release_${{ github.event.inputs.env }}
+          base: master
