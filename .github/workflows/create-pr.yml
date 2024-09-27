@@ -20,13 +20,16 @@ on:
         description: 'The name of the Elasticsearch index for the release'
         type: string
         required: true
+    secrets:
+      PAT:
+        required: true
 
 permissions:
   contents: write
   pull-requests: write
 
 jobs:
-  read-latest-tag:
+  create-pr:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -36,7 +39,7 @@ jobs:
         uses: ./.github/actions/get_latest_tag
         with:
           url: 'heons/test-semantic-version-up-file'
-          token: ${{ secrets.CICD_TOKEN }}
+          token: ${{ secrets.PAT }}
 
       - name: print-tag
         id: print-tag
