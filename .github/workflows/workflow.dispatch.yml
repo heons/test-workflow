@@ -2,26 +2,23 @@
 name: Dispatch Tests
 
 on:
-  workflow_call:
+  workflow_dispatch:
     inputs:
       env:
         description: Envrionment to release
-        type: string
         required: true
+        type: choice
+        options:
+          - uat
+          - prod
       ticket:
         description: 'Ticket number for the release e.g. AURORA-000'
-        type: string
         required: true
       releaseYearMonth:
         description: 'Release year and month e.g. 2024-09'
-        type: string
         required: true
       esIndex:
         description: 'The name of the Elasticsearch index for the release'
-        type: string
-        required: true
-    secrets:
-      PAT:
         required: true
 
 permissions:
@@ -29,14 +26,14 @@ permissions:
   pull-requests: write
 
 jobs:
-  create-pr:
+  read-latest-tag:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
       - name: Get tag using action
         id: get-tag-repo-a
-        uses: ./.github/actions/get_latest_tag
+        uses: heons/test-workflow/.github/actions/get_latest_tag@master
         with:
           url: 'heons/test-semantic-version-up-file'
           token: ${{ secrets.PAT }}
