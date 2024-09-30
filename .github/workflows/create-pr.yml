@@ -1,5 +1,5 @@
 
-name: Dispatch Tests
+name: Create PR
 
 on:
   workflow_call:
