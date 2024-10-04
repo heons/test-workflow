@@ -1,0 +1,25 @@
+
+name: Validate pr title
+
+on:
+  workflow_call:
+    inputs:
+      env:
+        description: Envrionment to release
+        type: string
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
+  validate-pr-title:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate PR title
+        uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          headerPattern: '^([\w\$\-]+)(\/([\w\$\-]+))?:(.*)$'
+          headerPatternCorrespondence: type, scope, subject
