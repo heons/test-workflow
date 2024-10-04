@@ -4,10 +4,10 @@ name: Validate pr title
 on:
   workflow_call:
     inputs:
-      env:
-        description: Envrionment to release
-        type: string
-        required: false
+      publish:
+        description: 'Publish flag'
+        type: boolean
+        default: false
 
 permissions:
   contents: read
