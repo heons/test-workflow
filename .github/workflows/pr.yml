@@ -1,0 +1,18 @@
+
+name: Dispatch Tests
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    uses: heons/test-workflow/.github/workflows/validate-pr-title.yml@master
+    with:
+      env: dev
