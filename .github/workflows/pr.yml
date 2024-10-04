@@ -16,4 +16,4 @@ jobs:
   test:
     uses: heons/test-workflow/.github/workflows/validate-pr-title.yml@master
     with:
-      publish: false
+      publish: true
