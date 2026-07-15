@@ -1,7 +1,0 @@
-# Readme
-
-line1
-
-line22
-
-line3
